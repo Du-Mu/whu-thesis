@@ -48,7 +48,7 @@
   {
     type .value_required:n = true,
     type .choices:nn       =
-      { doctor , master , bachelor , opening }
+      { doctor , master , bachelor , opening , classpaper }
       { \tl_gset_eq:NN \g__whu_option_type_tl \l_keys_choice_tl },
     type .initial:n        = doctor,
     % 学位，默认本科生
@@ -175,6 +175,13 @@
     \tl_if_eq:NnT \g__whu_option_class_tl { design }
       { \tl_const:Nn \c__whu_heading_tl { 武汉大学本科毕业设计 } }
   }
+\tl_if_eq:NnT \g__whu_option_type_tl { classpaper }
+  {
+    \tl_const:Nn \c__whu_heading_tl
+      { 武汉大学本科课程论文 }
+    \tl_set:Nn \bibname { 参考文献 }
+    \RequirePackage { needspace }
+  }
 
 \tl_if_eq:NnT \g__whu_option_type_tl { opening }
   {
@@ -206,7 +213,7 @@
 
 %%% ---- 定义页面样式 ----- %%%
 \RequirePackage { geometry }
-\clist_if_in:nVTF { bachelor , opening } \g__whu_option_type_tl
+\clist_if_in:nVTF { bachelor , opening , classpaper } \g__whu_option_type_tl
   { \geometry { hmargin = 3 cm , top = 2.5 cm , bottom = 2 cm , ignoreall } }
   { \geometry { margin = 2.5 cm , ignoreall } }
 % 本科、开题报告左右边距 3 cm，上边距 2.5 cm，下边距 2 cm
@@ -328,7 +335,7 @@
   }
 \skip_set:Nn \cftaftertoctitleskip { 0.5 \baselineskip }
 
-\clist_map_inline:nn { doctor , bachelor }
+\clist_map_inline:nn { doctor , bachelor , classpaper }
   {
     \tl_if_eq:NnT \g__whu_option_type_tl {#1}
       { \tocloftpagestyle { empty } }
@@ -461,7 +468,7 @@
   }
 
 %%% ---- 定义字体 ----- %%%
-\RequirePackage { unicode-math }
+\RequirePackage [mathrm=sym,warnings-off={mathtools-colon,mathtools-overbracket}]{ unicode-math }
 
 \cs_new_protected:Npn \__whu_fontset:n #1
   { \cs_gset_eq:Nc \__whu_set_font: { __whu_set_font_ #1 : } }
@@ -750,7 +757,7 @@
   { \zhdigits {#1} 年 \zhnumber {#2} 月 }
 \cs_generate_variant:Nn \__whu_date_parse:n { V }
 
-\tl_if_eq:NnTF \g__whu_option_type_tl { bachelor }
+\tl_if_eq:NnTF \g__whu_option_type_tl { bachelor , classpaper }
   { \skip_const:Nn \c__whu_baseline_skip { 23 pt } }
   {
     \tl_if_eq:NnTF \g__whu_option_type_tl { opening }
@@ -1075,6 +1082,18 @@
     \raggedbottom
     \__whu_set_table_font:
   }
+  \cs_new_protected:Npn \__whu_make_front_matter_classpaper:
+  {
+    \__whu_make_cover_classpaper:
+    \__whu_make_abstract:
+    \__whu_make_contents:
+
+    \pagestyle { plain }
+    \pagenumbering { arabic }
+    \__whu_set_baseline_skip:
+    \raggedbottom
+    \__whu_set_table_font:
+  }
 
 \cs_new_protected:Npn \__whu_make_front_matter_opening:
   {
@@ -1116,7 +1135,7 @@
           密级 \uline
             {
               \hbox_to_wd:nn { 3 cm }
-                { \hfill \g__whu_info_secret_level_tl \hfill }
+              \usepackage[fontset=none]{ctex}  { \hfill \g__whu_info_secret_level_tl \hfill }
             }
         \end { minipage }
       \group_end:
@@ -1150,6 +1169,53 @@
     \end { center }
     \__whu_new_chapter_page:
   }
+
+%%%% ---- 论文封面 ---- %%%%
+\cs_new_protected:Npn \__whu_make_cover_classpaper:
+  {
+    \pagestyle { empty }
+    \__whu_set_baseline_skip:
+    \begin { center }
+      \group_begin:
+        \heiti \zihao { 5 } \hfill
+        \begin { minipage } [ t ] { 5 cm }
+          \__whu_set_baseline_skip:
+          学号 \uline
+            {
+              \hbox_to_wd:nn { 3 cm }
+                { \hfill \g__whu_info_student_number_tl \hfill }
+            } \\
+        \end { minipage }
+      \group_end:
+      \par \skip_vertical:n { 6 em }
+      { \zihao { 1 } \c__whu_heading_tl }
+      \par \skip_vertical:n { 6 em }
+      \begin { minipage } [ c ] [ 6 cm ] { \textwidth }
+        \skip_set:Nn \baselineskip { 32 pt }
+        \centering { \heiti \zihao { 2 } \g__whu_info_title_tl }
+      \end { minipage }
+      \par \skip_vertical:n { 6 em }
+      \group_begin:
+        \zihao { -3 }
+        \begin { tabular } { p { 7 em } @ { ： \hbox:n {} } l }
+          \__whu_spread_with:nn
+            {
+              院 { \hbox_overlap_left:n { （ } 系 \hbox_overlap_right:n { ） } }
+              名称
+            }
+            { \hfill } & \g__whu_info_school_tl \\ [ 0.5 em ]
+          \__whu_spread_with:nn { 专业名称 } { \hfill }
+            & \g__whu_info_major_tl \\ [ 0.5 em ]
+          \__whu_spread_with:nn { 学生姓名 } { \hfill }
+            & \g__whu_info_author_tl \\ [ 0.5 em ]
+        \end { tabular }
+      \group_end:
+      \vfill
+      { \songti \zihao { -2 } \__whu_date_parse:V { \g__whu_info_date_tl } }
+    \end { center }
+    \__whu_new_chapter_page:
+  }
+
 
 \cs_new_protected:Npn \__whu_make_cover_master_doctor:
   {
@@ -1383,7 +1449,7 @@
             \tl_if_eq:NnT \g__whu_option_type_tl {##1}
               { \addcontentsline { toc } { chapter } { 摘 \qquad 要 } }
           }
-        \tl_if_eq:NnT \g__whu_option_type_tl { bachelor }
+        \tl_if_eq:NnT \g__whu_option_type_tl { bachelor , classpaper }
           { \thispagestyle { empty } }
         \__whu_set_baseline_skip:
 
@@ -1440,6 +1506,13 @@
   }
 
 \cs_new_protected:Npn \__whu_make_back_matter_bachelor:
+  {
+    \__whu_make_bibliography:
+    \__whu_make_thanks:
+    \__whu_make_appendix:
+  }
+
+\cs_new_protected:Npn \__whu_make_back_matter_classpaper:
   {
     \__whu_make_bibliography:
     \__whu_make_thanks:
