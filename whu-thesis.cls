@@ -342,8 +342,6 @@
   }
 
 \tl_set:Nn \contentsname   { 目 \qquad 录 }
-\tl_set:Nn \listfigurename { 图片索引     }
-\tl_set:Nn \listtablename  { 表格索引     }
 
 \tl_set:Nn \cftdot { \raisebox { 0.3 em } { \normalfont . } }
 \tl_set:Nn \cftdotsep { \c_one_int }
@@ -1412,18 +1410,6 @@
     \__whu_new_chapter_page:
     \tableofcontents
     \__whu_new_chapter_page:
-
-    \bool_if:NT \g__whu_style_list_of_figures_bool
-      {
-        \listoffigures
-        \__whu_new_chapter_page:
-      }
-
-    \bool_if:NT \g__whu_style_list_of_tables_bool
-      {
-        \listoftables
-        \__whu_new_chapter_page:
-      }
   }
 
 %%% ---- 摘要 ----- %%%
