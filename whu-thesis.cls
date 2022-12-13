@@ -1411,7 +1411,7 @@
     \tableofcontents
     \__whu_new_chapter_page:
   }
-
+  
 %%% ---- 摘要 ----- %%%
 % 关键词悬挂
 \box_new:N \l__whu_keywords_box
