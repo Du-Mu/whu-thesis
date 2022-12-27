@@ -1,5 +1,18 @@
 ## Description
 
-本项目fork from WHU-thesis  
-增加了课程论文classpaper类，强迫症忽略了CJK的warning  
-去掉了一些说明性的pdf，开箱即用
+### 基本结构:
+
+理论基础
+- 特征提取
+- CNN
+- KNN
+
+代码解读
+- image生成
+- CNN
+- KNN
+
+结果分析
+- 准确度对比
+
+future work
